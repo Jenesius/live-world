@@ -65,7 +65,7 @@ const contours  = new Proxy({}, {
 });
 
 let contourId = 0;
-function addContour(array){
+function addContour(array = []){
     function getRandomColor() {
         let letters = '0123456789ABCDEF';
         let color = '#';
@@ -75,9 +75,11 @@ function addContour(array){
         return color;
     }
     
+    if (array.length < 3) return console.warn("Контур должен содержать не менее 3 точек.")
+    
     const object = {
         array,
-        color: getRandomColor() + "35",
+        color: getRandomColor() + "75",
         id: contourId++
     }
 

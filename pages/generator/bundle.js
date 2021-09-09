@@ -195,7 +195,7 @@ const contours  = new Proxy({}, {
 });
 
 let contourId = 0;
-function addContour(array){
+function addContour(array = []){
     function getRandomColor() {
         let letters = '0123456789ABCDEF';
         let color = '#';
@@ -205,9 +205,11 @@ function addContour(array){
         return color;
     }
     
+    if (array.length < 3) return console.warn("Контур должен содержать не менее 3 точек.")
+    
     const object = {
         array,
-        color: getRandomColor() + "35",
+        color: getRandomColor() + "75",
         id: contourId++
     };
 
@@ -280,6 +282,43 @@ function checkPointInsideContour (point, arrayPoints) {
     }
     return w!==0;
 }
+
+var distanceBetweenPointToLine = ({x, y}, begin, end)=> {
+    
+    let x1 = begin.x, y1 = begin.y;
+    let x2 = end.x, y2 = end.y;
+    
+    
+    var A = x - x1;
+    var B = y - y1;
+    var C = x2 - x1;
+    var D = y2 - y1;
+    
+    var dot = A * C + B * D;
+    var len_sq = C * C + D * D;
+    var param = -1;
+    if (len_sq != 0) //in case of 0 length line
+        param = dot / len_sq;
+    
+    var xx, yy;
+    
+    if (param < 0) {
+        xx = x1;
+        yy = y1;
+    }
+    else if (param > 1) {
+        xx = x2;
+        yy = y2;
+    }
+    else {
+        xx = x1 + param * C;
+        yy = y1 + param * D;
+    }
+    
+    var dx = x - xx;
+    var dy = y - yy;
+    return Math.sqrt(dx * dx + dy * dy);
+};
 
 const view = new View(canvas);
 view.lockMove();
@@ -515,7 +554,31 @@ function onPoint(e){
         const point = new Point(e.offsetX + view.offset.x, e.offsetY + view.offset.y);
         if (point.x < 0 || point.y <0) return;
     
-        return addPoint(point);
+        addPoint(point);
+        
+        Object.values(contours).forEach(contour => {
+            
+            
+            const array = contour.array;
+            
+            for(let i = 0; i < array.length; i++) {
+                let nextIndex = (array.length - 1 === i)? 0: i+1;
+    
+                const beginPoint = array[i];
+                const endPoint   = array[nextIndex];
+    
+                let distanceLine = distanceBetweenPointToLine(point, beginPoint, endPoint);
+                
+                
+                if (distanceLine < 10) {
+                    return array.splice( nextIndex, 0, point);
+                }
+                
+            }
+
+        });
+        
+        
     }
     
     if (state.modePoint === "select-contour") {

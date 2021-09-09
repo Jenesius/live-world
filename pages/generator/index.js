@@ -6,6 +6,7 @@ import distanceBetweenPoints from "../../assets/js/core/utils/distanceBetweenPoi
 
 import {addPoint, addContour, points, removePoint, contours} from "./assets/js/store";
 import checkPointInsideContour from "../../assets/js/core/utils/checkPointInsideContour";
+import distanceBetweenPointToLine from "../../assets/js/core/utils/distanceBetweenPointToLine";
 
 const view = new View(canvas);
 view.lockMove();
@@ -241,7 +242,31 @@ function onPoint(e){
         const point = new Point(e.offsetX + view.offset.x, e.offsetY + view.offset.y);
         if (point.x < 0 || point.y <0) return;
     
-        return addPoint(point);
+        addPoint(point);
+        
+        Object.values(contours).forEach(contour => {
+            
+            
+            const array = contour.array;
+            
+            for(let i = 0; i < array.length; i++) {
+                let nextIndex = (array.length - 1 === i)? 0: i+1;
+    
+                const beginPoint = array[i];
+                const endPoint   = array[nextIndex];
+    
+                let distanceLine = distanceBetweenPointToLine(point, beginPoint, endPoint);
+                
+                
+                if (distanceLine < 10) {
+                    return array.splice( nextIndex, 0, point);
+                }
+                
+            }
+
+        })
+        
+        
     }
     
     if (state.modePoint === "select-contour") {
