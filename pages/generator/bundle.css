@@ -1,3 +1,47 @@
 body{
     margin: 0;
+    display: flex;
+}
+
+#function-panel{
+    display: flex;
+    flex-wrap: wrap;
+}
+#function-panel>div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    width: 50px;
+
+    cursor: pointer;
+    border: 1px solid white;
+    transition: 0.2s;
+    color: white;
+}
+#function-panel>div:hover{
+    border: 1px solid #8d8d8d;
+}
+#function-panel>div.active{
+    border:1px solid yellow;
+    color: yellow;
+}
+
+#list-contours{
+    width: 200px;
+    border: 1px solid #959595;
+    margin: 10px;
+    color: white;
+}
+#list-contours>div{
+    display: flex;
+    align-items: center;
+}
+#list-contours>div>p{
+    margin: 2px;
+    flex-grow: 1;
+}
+#list-contours>div>i{
+    padding: 4px;
+    cursor: pointer;
 }

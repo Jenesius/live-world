@@ -18,7 +18,14 @@ class Point{
     position: new Point(0, 0)
 });
 
-const canvas = document.createElement("canvas");
+let canvas = document.getElementById("canvas");
+
+
+if (!canvas) {
+    canvas = document.createElement("canvas");
+    document.body.appendChild(canvas);
+}
+
 const ctx = canvas.getContext("2d");
 
 /*
@@ -28,7 +35,7 @@ canvas.height = window.innerHeight;
 canvas.width = 800;
 canvas.height = 600;
 
-document.body.appendChild(canvas);
+
 
 document.body.style.backgroundColor = "rgba(29,28,28,0.86)";
 
