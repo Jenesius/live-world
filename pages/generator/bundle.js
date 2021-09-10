@@ -374,6 +374,16 @@ const array = [
             state.modePoint = null;
         },
         isActive: () => state.modePoint === "select-contour"
+    },
+    {
+        icon: "form",
+        onclick: () => {
+            
+            console.log("Points:", points);
+            console.log("Contours:", contours);
+            
+            
+        }
     }
 ];
 
@@ -383,7 +393,7 @@ function generateFunctionalPanel(){
     
         array.forEach(elem => {
             
-            if (elem.isActive()) elem.container.classList.add("active");
+            if (elem.isActive?.()) elem.container.classList.add("active");
             else elem.container.classList.remove("active");
             
         });
@@ -439,10 +449,6 @@ function draw() {
     ctx.moveTo(-view.offset.x, -view.offset.y);
     ctx.lineTo(-view.offset.x + 800, -view.offset.y);
     ctx.stroke();
-    
-    ctx.fillStyle = "red";
-    ctx.fillRect(50 - view.offset.x, 50 - view.offset.y, 50, 50);
-    
     
     
     points.forEach(item => {
@@ -505,9 +511,15 @@ new Proxy([], {
     }
 });
 
+function getNearPoint(coordinate, alt) {
+    return points.find(point => distanceBetweenPoints(coordinate, point) < alt);
+}
+
 function onPoint(e){
     
     if (view.moving) return; //Если карта является в режиме перемещения - отменяем операцию
+    
+    
     
     if (state.modePoint === "select") {
         
@@ -596,6 +608,33 @@ function onPoint(e){
 }
 
 canvas.addEventListener("mouseup", onPoint);
+
+canvas.addEventListener("mousedown", e => {
+    
+    if (!selectedPoint) return;
+    
+    const clickedPoint = getNearPoint({x: e.offsetX + view.offset.x, y: e.offsetY + view.offset.y}, 5);
+    
+    if (clickedPoint === selectedPoint) {
+    
+        function onMove(e){
+            selectedPoint.x = e.offsetX + view.offset.x;
+            selectedPoint.y = e.offsetY + view.offset.y;
+        }
+        
+        canvas.addEventListener("mousemove", onMove);
+        
+    }
+    
+    canvas.addEventListener("mouseup", function handlerMouseUp(e) {
+    
+        canvas.removeEventListener("mousemove", onMove);
+        canvas.removeEventListener("mouseup", handlerMouseUp);
+    
+    });
+    
+});
+
 
 document.addEventListener("keyup", e => {
     
